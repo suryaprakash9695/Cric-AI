@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { fetchLiveMatches, fetchMatchInfo, fetchMatchScorecard } = require('../services/apiService');
+const { mockLiveMatches } = require('../services/mockData');
 
 // GET /api/matches/live
 router.get('/live', async (req, res, next) => {
@@ -19,9 +20,12 @@ router.get('/live', async (req, res, next) => {
       return res.json({ source: 'api', ...result });
     }
     
-    return res.status(502).json({ error: 'Failed to fetch live matches from API or API limits reached.' });
+    // Fallback to mock data
+    const mockResult = { matches: mockLiveMatches, total: mockLiveMatches.length, demo: true };
+    cache.set(cacheKey, mockResult, 30);
+    res.json({ source: 'demo', ...mockResult });
   } catch (err) {
-    next(err);
+    res.json({ source: 'demo', matches: mockLiveMatches, total: mockLiveMatches.length, demo: true });
   }
 });
 
@@ -41,7 +45,8 @@ router.get('/:id/info', async (req, res, next) => {
       return res.json({ source: 'api', data: data.data });
     }
 
-    return res.status(404).json({ error: 'Match info not found from API.' });
+    const mock = mockLiveMatches.find(m => m.id === id) || mockLiveMatches[0];
+    res.json({ source: 'demo', data: mock, demo: true });
   } catch (err) {
     next(err);
   }
@@ -63,7 +68,27 @@ router.get('/:id/scorecard', async (req, res, next) => {
       return res.json({ source: 'api', data: data.data });
     }
 
-    return res.status(404).json({ error: 'Scorecard not found from API.' });
+    // Mock scorecard
+    const mockScorecard = {
+      id,
+      innings: [
+        {
+          inning: "India Inning 1",
+          batsman: [
+            { name: "Rohit Sharma", r: 73, b: 89, fours: 8, sixes: 2, sr: 82.02, dismissal: "c Smith b Cummins" },
+            { name: "Shubman Gill", r: 65, b: 102, fours: 7, sixes: 0, sr: 63.73, dismissal: "lbw b Hazlewood" },
+            { name: "Virat Kohli", r: 121, b: 156, fours: 14, sixes: 1, sr: 77.56, dismissal: "not out" }
+          ],
+          bowlers: [
+            { name: "Pat Cummins", o: 22, m: 4, r: 71, w: 3, econ: 3.22 },
+            { name: "Josh Hazlewood", o: 20, m: 5, r: 58, w: 2, econ: 2.90 },
+            { name: "Mitchell Starc", o: 18, m: 2, r: 74, w: 1, econ: 4.11 }
+          ],
+          total: { r: 342, w: 6, o: 87.3 }
+        }
+      ]
+    };
+    res.json({ source: 'demo', data: mockScorecard, demo: true });
   } catch (err) {
     next(err);
   }

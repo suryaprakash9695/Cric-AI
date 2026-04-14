@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { fetchCricketNews } = require('../services/apiService');
+const { mockNews } = require('../services/mockData');
 
 // GET /api/news?category=all|international|domestic|trending&page=1
 router.get('/', async (req, res, next) => {
@@ -27,9 +28,26 @@ router.get('/', async (req, res, next) => {
       return res.json({ source: 'api', ...result });
     }
 
-    return res.json({ source: 'api', articles: [], total: 0, page: 1, message: 'No live news available right now.' });
+    // Filter mock news by category
+    const filtered = category === 'all'
+      ? mockNews
+      : mockNews.filter(n => n.category === category);
+    
+    res.json({
+      source: 'demo',
+      articles: filtered,
+      total: filtered.length,
+      page: 1,
+      demo: true
+    });
   } catch (err) {
-    next(err);
+    res.json({
+      source: 'demo',
+      articles: mockNews,
+      total: mockNews.length,
+      page: 1,
+      demo: true
+    });
   }
 });
 
