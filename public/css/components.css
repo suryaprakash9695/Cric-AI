@@ -1,0 +1,240 @@
+/* ============================================
+   CricketVerse – Component Styles
+   ============================================ */
+
+/* ============ SCORECARD MODAL ============ */
+.scorecard-wrapper { display: flex; flex-direction: column; gap: 20px; }
+
+.inning-section {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.inning-header {
+  padding: 12px 16px;
+  background: rgba(0,212,255,0.08);
+  border-bottom: 1px solid var(--border-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inning-total {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+
+.scorecard-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.scorecard-table th {
+  padding: 8px 12px;
+  text-align: right;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-primary);
+}
+.scorecard-table th:first-child { text-align: left; }
+.scorecard-table td {
+  padding: 9px 12px;
+  text-align: right;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.scorecard-table td:first-child { text-align: left; font-weight: 600; }
+.scorecard-table tr:hover td { background: rgba(255,255,255,0.02); }
+.scorecard-table .not-out { color: var(--accent-success); }
+.scorecard-table .dismissal { font-size: 0.72rem; color: var(--text-muted); }
+
+.bowling-section-label {
+  padding: 10px 12px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-primary);
+}
+
+/* ============ FIXTURE CARDS ============ */
+.fixtures-grid { display: flex; flex-direction: column; gap: 12px; }
+
+.fixture-card {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--border-primary);
+  transition: var(--transition-fast);
+}
+
+.fixture-card:hover { border-color: var(--border-accent); }
+
+.fixture-teams {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fixture-team { font-weight: 700; font-size: 0.9rem; }
+.fixture-vs { color: var(--text-muted); font-size: 0.8rem; }
+
+.fixture-meta {
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.fixture-venue { color: var(--text-muted); font-size: 0.72rem; }
+
+/* ============ TOP PLAYERS TABLE ============ */
+.top-players-table { width: 100%; border-collapse: collapse; }
+.top-players-table th {
+  padding: 10px 14px;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-primary);
+}
+.top-players-table th:first-child, .top-players-table th:nth-child(2) { text-align: left; }
+.top-players-table td {
+  padding: 11px 14px;
+  text-align: right;
+  border-bottom: 1px solid var(--border-primary);
+  font-size: 0.85rem;
+}
+.top-players-table td:first-child { text-align: center; color: var(--text-muted); width: 40px; }
+.top-players-table td:nth-child(2) { text-align: left; font-weight: 700; }
+.top-players-table tr:hover td { background: var(--bg-card-hover); }
+.top-players-table tr:last-child td { border-bottom: none; }
+.role-badge {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.role-batsman { background: rgba(0,212,255,0.1); color: var(--accent-primary); }
+.role-bowler { background: rgba(255,71,87,0.1); color: var(--accent-danger); }
+.role-allrounder { background: rgba(124,58,237,0.1); color: var(--accent-secondary); }
+
+/* ============ LEAFLET POPUP CUSTOM STYLES ============ */
+.leaflet-popup-content-wrapper {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.leaflet-popup-tip { background: var(--bg-card) !important; }
+
+.leaflet-popup-content { margin: 14px 16px !important; }
+
+.map-popup-name { font-weight: 800; font-size: 0.95rem; margin-bottom: 4px; }
+.map-popup-meta { font-size: 0.8rem; color: var(--text-secondary); }
+.map-popup-matches {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(0,212,255,0.08);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+/* ============ CUSTOM MARKER ============ */
+.custom-marker {
+  background: var(--gradient-primary);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.custom-marker-inner {
+  transform: rotate(45deg);
+  font-size: 0.9rem;
+}
+
+/* ============ STADIUM INFO PANEL ============ */
+.stadium-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stadium-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stadium-detail-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; }
+.stadium-detail-location { font-size: 0.82rem; color: var(--text-secondary); }
+
+.stadium-stats-mini {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stadium-stat-item {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.stadium-stat-val { display: block; font-weight: 800; font-size: 1rem; color: var(--accent-primary); }
+.stadium-stat-label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+.stadium-records { background: var(--bg-secondary); border-radius: 10px; padding: 12px; }
+.stadium-records-title { font-weight: 700; font-size: 0.82rem; margin-bottom: 8px; color: var(--text-secondary); }
+.record-item { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8rem; border-bottom: 1px solid var(--border-primary); }
+.record-item:last-child { border-bottom: none; }
+.record-label { color: var(--text-muted); }
+.record-value { font-weight: 600; }
+
+.stadium-recent { margin-top: 6px; }
+.recent-match-item { padding: 8px; border-radius: 8px; background: var(--bg-secondary); margin-bottom: 6px; }
+.recent-match-name { font-weight: 700; font-size: 0.8rem; }
+.recent-match-result { font-size: 0.75rem; color: var(--accent-success); }
+
+/* ============ HISTORICAL MATCH DETAIL ============ */
+.hist-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.hist-stat-box {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.hist-stat-val { display: block; font-size: 1.4rem; font-weight: 800; color: var(--accent-primary); }
+.hist-stat-label { display: block; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+/* ============ RESPONSIVE ADJUSTMENTS ============ */
+@media (max-width: 768px) {
+  .map-layout { grid-template-columns: 1fr; }
+  .analytics-grid { grid-template-columns: 1fr; }
+  .league-hero { flex-direction: column; text-align: center; }
+  .hist-detail-grid { grid-template-columns: repeat(2, 1fr); }
+}

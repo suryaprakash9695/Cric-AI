@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CricketVerse – AI Powered Cricket Analytics & Live Dashboard. Live scores, player stats, league data, and cricket news in one platform." />
+  <meta name="keywords" content="cricket, live scores, IPL, cricket analytics, player stats, cricket news" />
+  <title>CricketVerse – AI Powered Cricket Analytics & Live Dashboard</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/animations.css" />
+</head>
+<body>
+  <!-- Notification Container -->
+  <div id="notification-container" aria-live="polite"></div>
+  
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-logo">
+      <div class="cricket-ball-loader">
+        <div class="ball-inner"></div>
+      </div>
+      <h1 class="loading-title">CricketVerse</h1>
+      <p class="loading-subtitle">Loading AI Cricket Dashboard...</p>
+      <div class="loading-bar"><div class="loading-progress"></div></div>
+    </div>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <nav id="sidebar" class="sidebar" role="navigation" aria-label="Main Navigation">
+    <div class="sidebar-header">
+      <div class="logo-wrapper">
+        <span class="logo-icon">🏏</span>
+        <span class="logo-text">CricketVerse</span>
+      </div>
+      <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="nav-section">
+      <span class="nav-label">MAIN</span>
+      <ul class="nav-list" role="list">
+        <li><a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span><span class="nav-text">Dashboard</span>
+        </a></li>
+        <li><a href="#" class="nav-item" data-page="live" id="nav-live">
+          <span class="nav-icon">🔴</span><span class="nav-text">Live Matches</span>
+          <span class="live-badge" id="live-count-badge">0</span>
+        </a></li>
+        <li><a href="#" class="nav-item" data-page="historical" id="nav-historical">
+          <span class="nav-icon">📚</span><span class="nav-text">Historical</span>
+        </a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <span class="nav-label">LEAGUES</span>
+      <ul class="nav-list" role="list">
+        <li><a href="#" class="nav-item" data-page="ipl" id="nav-ipl">
+          <span class="nav-icon">🏆</span><span class="nav-text">IPL</span>
+        </a></li>
+        <li><a href="#" class="nav-item" data-page="bbl" id="nav-bbl">
+          <span class="nav-icon">🌟</span><span class="nav-text">BBL</span>
+        </a></li>
+        <li><a href="#" class="nav-item" data-page="cpl" id="nav-cpl">
+          <span class="nav-icon">🌴</span><span class="nav-text">CPL</span>
+        </a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <span class="nav-label">ANALYTICS</span>
+      <ul class="nav-list" role="list">
+        <li><a href="#" class="nav-item" data-page="players" id="nav-players">
+          <span class="nav-icon">👤</span><span class="nav-text">Players</span>
+        </a></li>
+        <li><a href="#" class="nav-item" data-page="analytics" id="nav-analytics">
+          <span class="nav-icon">📈</span><span class="nav-text">Analytics</span>
+        </a></li>
+        <li><a href="#" class="nav-item" data-page="map" id="nav-map">
+          <span class="nav-icon">🗺️</span><span class="nav-text">Stadium Map</span>
+        </a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <span class="nav-label">CONTENT</span>
+      <ul class="nav-list" role="list">
+        <li><a href="#" class="nav-item" data-page="news" id="nav-news">
+          <span class="nav-icon">📰</span><span class="nav-text">Cricket News</span>
+        </a></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-footer">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+        <span class="moon-icon">🌙</span>
+        <span class="nav-text">Dark Mode</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="main-content">
+    <!-- Top Header Bar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Open Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="page-breadcrumb">
+          <span id="current-page-title">Dashboard</span>
+        </div>
+      </div>
+      <div class="top-bar-center">
+        <div class="live-ticker" id="live-ticker" aria-label="Live match ticker">
+          <span class="ticker-label">🔴 LIVE</span>
+          <div class="ticker-content" id="ticker-content">
+            <span>Loading live matches...</span>
+          </div>
+        </div>
+      </div>
+      <div class="top-bar-right">
+        <div class="search-wrapper">
+          <input type="search" id="global-search" placeholder="Search players, teams..." aria-label="Global Search" />
+          <button class="search-btn" aria-label="Search">🔍</button>
+          <div class="search-dropdown" id="search-dropdown" role="listbox" aria-label="Search results"></div>
+        </div>
+        <div class="live-time" id="live-clock"></div>
+      </div>
+    </header>
+
+    <!-- Pages Container -->
+    <div id="pages-container" class="pages-container">
+      
+      <!-- ==================== DASHBOARD PAGE ==================== -->
+      <section id="page-dashboard" class="page active" data-page="dashboard">
+        <div class="page-header">
+          <h1 class="page-title">🏏 Live Cricket Dashboard</h1>
+          <p class="page-subtitle">Real-time scores, live analytics, and cricket insights</p>
+        </div>
+        
+        <!-- Quick Stats Row -->
+        <div class="stats-grid" id="quick-stats">
+          <div class="stat-card" id="stat-live">
+            <div class="stat-icon">🔴</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-live-count">0</span>
+              <span class="stat-label">Live Matches</span>
+            </div>
+            <div class="stat-glow red"></div>
+          </div>
+          <div class="stat-card" id="stat-upcoming">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-upcoming-count">0</span>
+              <span class="stat-label">Upcoming</span>
+            </div>
+            <div class="stat-glow blue"></div>
+          </div>
+          <div class="stat-card" id="stat-completed">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-completed-count">0</span>
+              <span class="stat-label">Completed</span>
+            </div>
+            <div class="stat-glow green"></div>
+          </div>
+          <div class="stat-card" id="stat-players">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <span class="stat-value">2400+</span>
+              <span class="stat-label">Players Tracked</span>
+            </div>
+            <div class="stat-glow purple"></div>
+          </div>
+        </div>
+        
+        <!-- Live Matches Section -->
+        <div class="section-header">
+          <h2 class="section-title">🔴 Live & Recent Matches</h2>
+          <button class="refresh-btn" id="refresh-btn" onclick="window.refreshLiveMatches()">
+            <span class="refresh-icon">↻</span> Refresh
+          </button>
+        </div>
+        <div class="matches-grid" id="dashboard-matches">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+        
+        <!-- Dashboard Bottom Grid -->
+        <div class="dashboard-grid">
+          <!-- Win Probability Widget -->
+          <div class="card widget-card">
+            <div class="card-header">
+              <h3>🧠 AI Win Probability</h3>
+              <span class="card-badge">REAL-TIME</span>
+            </div>
+            <div class="win-prob-container" id="win-prob-widget">
+              <div class="win-prob-teams">
+                <span class="prob-team" id="prob-team1">India</span>
+                <span class="prob-vs">vs</span>
+                <span class="prob-team" id="prob-team2">Australia</span>
+              </div>
+              <div class="win-prob-bar">
+                <div class="prob-bar-inner" id="prob-bar-t1" style="width: 58%;">58%</div>
+                <div class="prob-bar-inner t2" id="prob-bar-t2" style="width: 42%;">42%</div>
+              </div>
+              <div class="win-factors" id="win-factors">
+                <div class="factor"><span>RRR</span><strong id="rrr-val">7.2</strong></div>
+                <div class="factor"><span>Pressure</span><strong id="pressure-val">High</strong></div>
+                <div class="factor"><span>Resources</span><strong id="resources-val">62%</strong></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top News Widget -->
+          <div class="card widget-card">
+            <div class="card-header">
+              <h3>📰 Latest News</h3>
+              <a href="#" class="card-link" onclick="window.navigateTo('news')">View All →</a>
+            </div>
+            <div class="news-mini-list" id="news-mini">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+          </div>
+          
+          <!-- Quick League Standings Widget -->
+          <div class="card widget-card">
+            <div class="card-header">
+              <h3>🏆 IPL 2025 Standings</h3>
+              <a href="#" class="card-link" onclick="window.navigateTo('ipl')">Full Table →</a>
+            </div>
+            <div id="ipl-mini-standings"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== LIVE MATCHES PAGE ==================== -->
+      <section id="page-live" class="page" data-page="live">
+        <div class="page-header">
+          <h1 class="page-title">🔴 Live Matches Center</h1>
+          <p class="page-subtitle">All ongoing, upcoming, and recently completed matches</p>
+        </div>
+        
+        <div class="filter-bar">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="live">Live 🔴</button>
+          <button class="filter-btn" data-filter="upcoming">Upcoming ⏳</button>
+          <button class="filter-btn" data-filter="result">Completed ✅</button>
+          <button class="filter-btn" data-filter="test">Test</button>
+          <button class="filter-btn" data-filter="odi">ODI</button>
+          <button class="filter-btn" data-filter="t20">T20</button>
+        </div>
+        
+        <div class="matches-grid large" id="live-matches-grid">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+        
+        <!-- Match Scorecard Modal -->
+        <div id="scorecard-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 id="modal-title">Match Scorecard</h2>
+              <button class="modal-close" id="modal-close" aria-label="Close Modal">✕</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== HISTORICAL PAGE ==================== -->
+      <section id="page-historical" class="page" data-page="historical">
+        <div class="page-header">
+          <h1 class="page-title">📚 Historical Match Explorer</h1>
+          <p class="page-subtitle">Explore match data from the Cricsheet dataset</p>
+        </div>
+        
+        <div class="historical-filters card">
+          <div class="filter-grid">
+            <div class="filter-group">
+              <label for="hist-year">Year</label>
+              <select id="hist-year" class="filter-select">
+                <option value="">All Years</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="hist-team">Team</label>
+              <select id="hist-team" class="filter-select">
+                <option value="">All Teams</option>
+                <option value="India">India</option>
+                <option value="Australia">Australia</option>
+                <option value="England">England</option>
+                <option value="Pakistan">Pakistan</option>
+                <option value="South Africa">South Africa</option>
+                <option value="New Zealand">New Zealand</option>
+                <option value="West Indies">West Indies</option>
+                <option value="Sri Lanka">Sri Lanka</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="hist-format">Format</label>
+              <select id="hist-format" class="filter-select">
+                <option value="">All Formats</option>
+                <option value="test">Test</option>
+                <option value="odi">ODI</option>
+                <option value="t20">T20</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="hist-tournament">Tournament</label>
+              <select id="hist-tournament" class="filter-select">
+                <option value="">All Tournaments</option>
+                <option value="icc_world_cup">ICC World Cup</option>
+                <option value="icc_world_t20">ICC World T20</option>
+                <option value="ashes">The Ashes</option>
+                <option value="ipl">IPL</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="window.loadHistoricalData()">Search Matches</button>
+        </div>
+        
+        <div class="historical-results" id="historical-results"></div>
+      </section>
+
+      <!-- ==================== LEAGUE PAGES (IPL/BBL/CPL) ==================== -->
+      <section id="page-ipl" class="page" data-page="ipl">
+        <div id="league-content-ipl" class="league-page-content"></div>
+      </section>
+      <section id="page-bbl" class="page" data-page="bbl">
+        <div id="league-content-bbl" class="league-page-content"></div>
+      </section>
+      <section id="page-cpl" class="page" data-page="cpl">
+        <div id="league-content-cpl" class="league-page-content"></div>
+      </section>
+
+      <!-- ==================== PLAYERS PAGE ==================== -->
+      <section id="page-players" class="page" data-page="players">
+        <div class="page-header">
+          <h1 class="page-title">👤 Player Profile System</h1>
+          <p class="page-subtitle">Search and explore detailed stats for any cricket player</p>
+        </div>
+        
+        <div class="player-search-bar">
+          <div class="search-input-group">
+            <input type="text" id="player-search-input" placeholder="Search player name..." class="player-search-input" />
+            <button class="btn-primary" id="player-search-btn">🔍 Search</button>
+          </div>
+        </div>
+        
+        <div class="player-search-results" id="player-search-results"></div>
+        
+        <div class="featured-players">
+          <h2 class="section-title">⭐ Featured Players</h2>
+          <div class="players-grid" id="featured-players-grid"></div>
+        </div>
+      </section>
+
+      <!-- Player Profile Modal -->
+      <div id="player-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="player-modal-title">
+        <div class="modal-content large">
+          <div class="modal-header">
+            <h2 id="player-modal-title">Player Profile</h2>
+            <button class="modal-close" id="player-modal-close" aria-label="Close">✕</button>
+          </div>
+          <div class="modal-body" id="player-modal-body"></div>
+        </div>
+      </div>
+
+      <!-- ==================== ANALYTICS PAGE ==================== -->
+      <section id="page-analytics" class="page" data-page="analytics">
+        <div class="page-header">
+          <h1 class="page-title">📈 Cricket Analytics Hub</h1>
+          <p class="page-subtitle">Deep performance insights and match visualizations</p>
+        </div>
+        
+        <div class="analytics-grid">
+          <!-- Run Rate Chart -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3>📊 Run Rate Progression</h3>
+              <div class="chart-controls">
+                <button class="chart-btn active" onclick="window.loadRunRateChart()">Refresh</button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="run-rate-chart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Manhattan Chart -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3>🏙️ Manhattan Chart</h3>
+              <span class="card-badge">Runs per Over</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="manhattan-chart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Format Stats Radar -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3>🎯 Player Format Analysis</h3>
+              <span class="card-badge">Radar View</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="radar-chart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Win Probability Timeline -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3>🧠 Win Probability Timeline</h3>
+              <span class="card-badge">AI Powered</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="win-prob-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Key Insights Panel -->
+        <div class="card insights-panel">
+          <div class="card-header">
+            <h3>💡 Smart Insights</h3>
+            <span class="card-badge green">AI Analysis</span>
+          </div>
+          <div class="insights-grid" id="smart-insights">
+            <div class="insight-card">
+              <div class="insight-icon">⚡</div>
+              <div class="insight-content">
+                <span class="insight-title">Impact Player</span>
+                <span class="insight-value">Virat Kohli</span>
+                <span class="insight-desc">58% team win rate when Kohli scores 50+</span>
+              </div>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">🎯</div>
+              <div class="insight-content">
+                <span class="insight-title">Key Bowling Phase</span>
+                <span class="insight-value">Overs 15-20</span>
+                <span class="insight-desc">Average 12.3 runs per over in death overs</span>
+              </div>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">📊</div>
+              <div class="insight-content">
+                <span class="insight-title">Venue Advantage</span>
+                <span class="insight-value">MCG Home Edge</span>
+                <span class="insight-desc">Australia wins 67% batting first at MCG</span>
+              </div>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">🔄</div>
+              <div class="insight-content">
+                <span class="insight-title">Powerplay Impact</span>
+                <span class="insight-value">78 runs avg.</span>
+                <span class="insight-desc">Teams scoring 90+ in PP win 71% of matches</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== MAP PAGE ==================== -->
+      <section id="page-map" class="page" data-page="map">
+        <div class="page-header">
+          <h1 class="page-title">🗺️ Global Cricket Stadium Map</h1>
+          <p class="page-subtitle">Explore cricket grounds across the world</p>
+        </div>
+        
+        <div class="map-layout">
+          <div class="map-wrapper">
+            <div id="cricket-map" style="height: 550px; border-radius: 16px;"></div>
+          </div>
+          <div class="stadium-info-panel card" id="stadium-info-panel">
+            <div class="stadium-placeholder">
+              <span class="placeholder-icon">🏟️</span>
+              <p>Click on a stadium marker to view details</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stadiums-list-grid" id="stadiums-list"></div>
+      </section>
+
+      <!-- ==================== NEWS PAGE ==================== -->
+      <section id="page-news" class="page" data-page="news">
+        <div class="page-header">
+          <h1 class="page-title">📰 Cricket News Hub</h1>
+          <p class="page-subtitle">Latest updates from the cricket world</p>
+        </div>
+        
+        <div class="news-categories">
+          <button class="news-cat-btn active" data-cat="all" id="cat-all">🌍 All News</button>
+          <button class="news-cat-btn" data-cat="international" id="cat-international">🏆 International</button>
+          <button class="news-cat-btn" data-cat="domestic" id="cat-domestic">🏠 Domestic</button>
+          <button class="news-cat-btn" data-cat="trending" id="cat-trending">🔥 Trending</button>
+        </div>
+        
+        <div class="news-grid" id="news-grid">
+          <div class="skeleton-card tall"></div>
+          <div class="skeleton-card tall"></div>
+          <div class="skeleton-card tall"></div>
+          <div class="skeleton-card tall"></div>
+        </div>
+        
+        <div class="load-more-container">
+          <button class="btn-secondary" id="load-more-news" onclick="window.loadMoreNews()">Load More</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Mobile Overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script src="/js/matches.js"></script>
+  <script src="/js/players.js"></script>
+  <script src="/js/leagues.js"></script>
+  <script src="/js/news.js"></script>
+  <script src="/js/analytics.js"></script>
+  <script src="/js/map.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
