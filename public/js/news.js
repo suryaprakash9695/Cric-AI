@@ -117,14 +117,12 @@ const NewsModule = {
     const article = this.allArticles[idx];
     if (!article) return;
 
-    // Open in new tab if URL is not a placeholder
     if (article.url && article.url !== '#') {
       window.open(article.url, '_blank', 'noopener,noreferrer');
     } else {
-      // Show in notification (demo mode)
       Notifications.info(
         `📰 ${Utils.truncate(article.title, 60)}`,
-        article.description || 'Full article not available in demo mode.'
+        article.description || 'Full article URL not provided by the API.'
       );
     }
   },

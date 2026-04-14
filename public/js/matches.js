@@ -23,9 +23,6 @@ const MatchesModule = {
       this.updateStats();
       this.updateLiveTicker();
       this.updateLiveBadge();
-      if (data.demo) {
-        console.info('Running in demo mode – using mock match data');
-      }
     } catch (err) {
       console.error('Failed to load matches:', err);
       document.getElementById('dashboard-matches').innerHTML =

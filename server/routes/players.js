@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { searchPlayer, fetchPlayerStats } = require('../services/apiService');
-const { mockPlayers } = require('../services/mockData');
 
 // GET /api/players/search?q=name
 router.get('/search', async (req, res, next) => {
@@ -21,17 +20,9 @@ router.get('/search', async (req, res, next) => {
       return res.json({ source: 'api', players: data.data });
     }
 
-    // Filter mock players
-    const filtered = mockPlayers.filter(p =>
-      p.name.toLowerCase().includes(q.toLowerCase()) ||
-      p.country.toLowerCase().includes(q.toLowerCase())
-    );
-    res.json({ source: 'demo', players: filtered.length ? filtered : mockPlayers, demo: true });
+    return res.json({ source: 'api', players: [], message: 'No players found' });
   } catch (err) {
-    const filtered = mockPlayers.filter(p =>
-      p.name.toLowerCase().includes(q.toLowerCase())
-    );
-    res.json({ source: 'demo', players: filtered.length ? filtered : mockPlayers, demo: true });
+    next(err);
   }
 });
 
@@ -45,28 +36,16 @@ router.get('/:id', async (req, res, next) => {
     const cached = cache.get(cacheKey);
     if (cached) return res.json({ source: 'cache', player: cached });
 
-    // Check if it's a mock player
-    if (id.startsWith('mock-')) {
-      const mock = mockPlayers.find(p => p.id === id) || mockPlayers[0];
-      return res.json({ source: 'demo', player: mock, demo: true });
-    }
-
     const data = await fetchPlayerStats(id);
     if (data && data.status === 'success') {
       cache.set(cacheKey, data.data, parseInt(process.env.CACHE_TTL_STATS) || 3600);
       return res.json({ source: 'api', player: data.data });
     }
 
-    const mock = mockPlayers[0];
-    res.json({ source: 'demo', player: mock, demo: true });
+    return res.status(404).json({ error: 'Player statistics not found from API.' });
   } catch (err) {
-    res.json({ source: 'demo', player: mockPlayers[0], demo: true });
+    next(err);
   }
-});
-
-// GET /api/players - list top players
-router.get('/', async (req, res) => {
-  res.json({ source: 'demo', players: mockPlayers, demo: true });
 });
 
 module.exports = router;

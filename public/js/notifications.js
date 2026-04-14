@@ -92,28 +92,6 @@ const Notifications = {
     );
   },
 
-  // Simulate random cricket events (demo mode)
-  startSimulation() {
-    const events = [
-      () => this.wicket('Rohit Sharma', 'Pat Cummins', '82/1 (12.3 ov)'),
-      () => this.milestone('Virat Kohli', 'Reaches his 50th ODI century! 🎊'),
-      () => this.matchStart('West Indies', 'Sri Lanka'),
-      () => this.show('📊 Win Probability Update', 'India: 67% | Australia: 33%', 'info', 5000),
-      () => this.milestone('Jasprit Bumrah', 'Takes his 5th wicket of the innings!'),
-      () => this.wicket('David Warner', 'Ravindra Jadeja', '145/3 (22.4 ov)'),
-      () => this.show('🔔 Score Update', 'England reaches 200 off 35 overs!', 'info', 4000),
-    ];
-
-    // Show first event after 8 seconds, then random ones
-    setTimeout(() => {
-      events[Math.floor(Math.random() * events.length)]();
-    }, 8000);
-
-    setInterval(() => {
-      if (Math.random() < 0.4) {
-        events[Math.floor(Math.random() * events.length)]();
-      }
-    }, 25000);
   }
 };
 
